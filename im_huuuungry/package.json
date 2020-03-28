@@ -1,33 +1,29 @@
 {
-  "name": "im_huuuungry",
-  "version": "6.3.4",
-  "private": true,
+  "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "react-native start",
-    "run:android": "react-native run-android",
-    "run:ios": "react-native run-ios --simulator=\"iPhone X\"",
-    "build:apk": "cd android && ./gradlew assembleRelease",
-    "test": "jest",
-    "prepare": "patch-package"
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "eject": "expo eject"
   },
   "dependencies": {
-    "@react-native-firebase/app": "6.3.4",
-    "react": "16.9.0",
-    "react-native": "0.61.5"
+    "expo": "^35.0.0",
+    "firebase": "^7.2.2",
+    "react": "16.8.3",
+    "react-dom": "16.8.3",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
+    "react-native-gesture-handler": "1.3.0",
+    "react-native-paper": "^3.0.0",
+    "react-native-screens": "^2.4.0",
+    "react-native-status-bar-height": "^2.4.0",
+    "react-native-web": "^0.11.7",
+    "react-navigation": "^4.0.10",
+    "react-navigation-stack": "^1.10.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.6.2",
-    "@babel/runtime": "^7.6.2",
-    "@react-native-community/cli": "^2.9.0",
-    "@react-native-community/eslint-config": "^0.0.5",
-    "babel-jest": "^24.9.0",
-    "eslint": "^6.5.1",
-    "jest": "^24.9.0",
-    "metro-react-native-babel-preset": "^0.56.0",
-    "patch-package": "^6.1.4",
-    "react-test-renderer": "16.9.0"
+    "babel-preset-expo": "^7.1.0",
+    "prettier": "^1.18.2"
   },
-  "jest": {
-    "preset": "react-native"
-  }
+  "private": true
 }
