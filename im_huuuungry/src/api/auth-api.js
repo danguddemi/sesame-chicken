@@ -1,16 +1,19 @@
 import firebase from "firebase/app";
-import "firebase/auth";
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 export const logoutUser = () => {
-  firebase.auth().signOut();
+  auth().signOut();
 };
 
 export const signInUser = async ({ name, email, password }) => {
   try {
-    await firebase.auth().createUserWithEmailAndPassword(email, password);
-    firebase.auth().currentUser.updateProfile({
+    await auth().createUserWithEmailAndPassword(email, password);
+    await auth().currentUser.updateProfile({
       displayName: name
     });
+
+    firestore().collection('users').doc(auth().currentUser.uid).update({'displayName': name});
 
     return {};
   } catch (error) {
@@ -41,7 +44,7 @@ export const signInUser = async ({ name, email, password }) => {
 
 export const loginUser = async ({ email, password }) => {
   try {
-    await firebase.auth().signInWithEmailAndPassword(email, password);
+    await auth().signInWithEmailAndPassword(email, password);
     return {};
   } catch (error) {
     switch (error.code) {
@@ -68,7 +71,7 @@ export const loginUser = async ({ email, password }) => {
 
 export const sendEmailWithPassword = async email => {
   try {
-    await firebase.auth().sendPasswordResetEmail(email);
+    await auth().sendPasswordResetEmail(email);
     return {};
   } catch (error) {
     switch (error.code) {
