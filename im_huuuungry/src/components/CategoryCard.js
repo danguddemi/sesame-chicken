@@ -1,15 +1,15 @@
-import React, { memo } from "react";
-import { TouchableHighlight, StyleSheet, Image } from "react-native";
+import React, {memo} from "react";
+import {TouchableHighlight, StyleSheet, Image} from "react-native";
 import {Title, Surface} from "react-native-paper";
 
-const CategoryCard = ({ category, icon }) => (
-    <TouchableHighlight onPress={() => {}}>
+const CategoryCard = ({category, icon, navigate}) => {
+    return (<TouchableHighlight onPress={navigate}>
         <Surface style={styles.container}>
             <Title>{category}</Title>
             <Image source={icon}/>
         </Surface>
-    </TouchableHighlight>
-);
+    </TouchableHighlight>)
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -23,4 +23,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default memo(CategoryCard);
+export default CategoryCard;

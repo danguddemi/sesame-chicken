@@ -9,15 +9,15 @@ const config = {
 const useYelpApi = () => {
   const [businesses, setBusinesses] = useState([]);
 
-  const getBusinesses = async (latitude, longitude) => {
+  const fetchBusinesses = async (latitude, longitude, categories) => {
     const res = await fetch(`https://api.yelp.com/v3/businesses/search?latitude=${latitude}&longitude=${longitude}`, config);
     let { businesses } = await res.json();
 
     businesses = sortOn(businesses, 'distance');
-    setBusinesses(businesses)
+    setBusinesses(businesses.map(business => {return {name: business.name, coords: business.coordinates, imageUrl: business.image_url}}))
   };
 
-  return [businesses, getBusinesses]
+  return [businesses, fetchBusinesses]
 };
 
 export default useYelpApi;

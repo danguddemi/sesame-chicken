@@ -2,8 +2,6 @@ import React, {memo, useEffect, useState} from 'react';
 import {StyleSheet, View, Text} from "react-native";
 import {SwipeListView} from "react-native-swipe-list-view";
 import Background from '../components/Background';
-import useGeoLocation from '../api/geo-location';
-import useYelpApi from '../api/yelp-client';
 import CogButton from "../components/CogButton";
 import CategoryCard from "../components/CategoryCard";
 import firebase from "firebase/app";
@@ -15,10 +13,9 @@ import {getStatusBarHeight} from "react-native-status-bar-height";
 import Button from "../components/Button";
 import categoryAssets from "../core/categories";
 import SelectionDialog from "../components/SelectionDialog";
+import FilledBackButton from "../components/FilledBackButton";
 
 const Dashboard = ({navigation}) => {
-    const [location, errorMessage] = useGeoLocation();
-    const [businesses, getBusinesses] = useYelpApi();
     const [categories, setCategories] = useState([]);
     const user = firebase.auth().currentUser;
     const userData = firebase.firestore().collection('users').doc(user.uid);
@@ -60,12 +57,6 @@ const Dashboard = ({navigation}) => {
     };
 
     useEffect(() => {
-        const latitude = 42.317023;
-        const longitude = -71.109545;
-        getBusinesses(latitude, longitude);
-    }, [location]);
-
-    useEffect(() => {
         updateCategories()
     }, []);
 
@@ -73,27 +64,33 @@ const Dashboard = ({navigation}) => {
         <Background>
             <CogButton goTo={() => navigation.navigate("SettingScreen")}/>
             <Title style={styles.header}>Your Categories</Title>
+            <SwipeListView
+                style={styles.listView}
+                data={categories}
+                showsVerticalScrollIndicator={false}
+                keyExtractor={item => item}
+                closeOnRowBeginSwipe={true}
+                renderHiddenItem={(data, rowMap) => (
+                    <View style={styles.rowBack}>
+                        <IconButton
+                            icon={require('../assets/delete-bin.png')}
+                            onPress={() => deleteRow(rowMap, data.item)}/>
+                        <Text>Right</Text>
+                    </View>
+                )}
+                renderItem={({item}) => (
+                    <CategoryCard
+                        category={item}
+                        icon={categoryAssets[item].icon}
+                        navigate={() => navigation.navigate('RestaurantScreen', {yelpLabels: categoryAssets[item].yelpLabels})}
+                    />)}
+                ItemSeparatorComponent={() => <Divider style={{opacity: 0}}/>}
+                ListFooterComponent={categories.length < 4 ?
+                    <Button onPress={() => setVisible(true)}>Add Category</Button> : null}
+                leftOpenValue={75}
+                rightOpenValue={-150}
+            />
             <Portal>
-                <SwipeListView
-                    style={styles.listView}
-                    data={categories}
-                    showsVerticalScrollIndicator={false}
-                    keyExtractor={item => item}
-                    closeOnRowBeginSwipe={true}
-                    renderHiddenItem={(data, rowMap) => (
-                        <View style={styles.rowBack}>
-                            <IconButton
-                                icon={require('../assets/delete-bin.png')}
-                                onPress={() => deleteRow(rowMap, data.item)}/>
-                            <Text>Right</Text>
-                        </View>
-                    )}
-                    renderItem={({item}) => <CategoryCard category={item} icon={categoryAssets[item].icon}/>}
-                    ItemSeparatorComponent={() => <Divider style={{opacity: 0}}/>}
-                    ListFooterComponent={categories.length < 4 ? <Button onPress={() => setVisible(true)}>Add Category</Button> : null}
-                    leftOpenValue={75}
-                    rightOpenValue={-150}
-                />
                 <Dialog visible={visible} onDismiss={() => setVisible(false)}>
                     <SelectionDialog categories={categories} addCallback={(value) => addRow(value)}/>
                 </Dialog>
