@@ -1,54 +1,55 @@
-import React, {memo, useEffect} from 'react';
+import React, {memo, useEffect, useState, useRef} from 'react';
 import {View, StyleSheet} from 'react-native';
-import {Portal, Card, Title, Subheading} from 'react-native-paper';
+import { Card, Title, Subheading} from 'react-native-paper';
 import useGeoLocation from "../api/geo-location";
 import useYelpApi from "../api/yelp-client";
 import FilledBackButton from "../components/FilledBackButton";
 import MapView, {Overlay} from "react-native-maps";
 import Carousel from "react-native-snap-carousel";
-import categories from "../core/categories";
-
-const region = {
-    latitude: 37.321996988,
-    longitude: -122.0325472123455,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421
-};
+import Background from "../components/Background";
 
 const RestaurantScreen = ({navigation}) => {
     const [location, errorMessage] = useGeoLocation();
-    const [businesses, fetchBusinesses] = useYelpApi();
+    const [yelpBusiness, yelpRegion, fetchBusinesses] = useYelpApi();
+    const mapRef = useRef(null);
+
+    const updateRegion = (item) => {
+        mapRef.current.animateToRegion({latitude: item.coords.latitude - 0.4 * 0.05, longitude: item.coords.longitude}, 100)
+    };
 
     useEffect(() => {
-        fetchBusinesses(region.latitude, region.longitude, navigation.getParam('yelpLabels', null));
+        if (location !== null) {
+            fetchBusinesses(location.coords.latitude - 0.4 * 0.05, location.coords.longitude, navigation.getParam('yelpLabels', null));
+        }
     }, [location]);
 
     return (
         <View>
-            <MapView
+            {yelpRegion !== null ? <MapView
                 style={{
                     width: '100%',
                     height: '100%'
                 }}
-                initialRegion={region}
-                showsUserLocation
-                showsMyLocationButton
+                showsUserLocation={true}
+                initialRegion={{...yelpRegion, latitudeDelta: 0.05, longitudeDelta: 0.05}}
+                ref={mapRef}
             >
-                {businesses.map((place, idx) => (
+                {yelpBusiness.map((place, idx) => (
                     <MapView.Marker
                         key={idx}
                         title={place.name}
                         coordinate={place.coords}
                     />))}
-            </MapView>
-            <FilledBackButton navigation={navigation}/>
+            </MapView> : <Background/>}
+            <FilledBackButton goBack={() => navigation.navigate('Dashboard')}/>
             <View style={styles.actionArea}>
                 <View style={styles.cardContainer}>
                     <Carousel
-                        data={businesses}
+                        data={yelpBusiness}
                         sliderWidth={375}
                         itemWidth={300}
                         layout={'default'}
+                        onBeforeSnapToItem={idx => updateRegion(yelpBusiness[idx])}
                         renderItem={({item, index}) => (
                             <Card key={index} style={styles.businessCard}>
                                 <Card.Cover
@@ -57,7 +58,7 @@ const RestaurantScreen = ({navigation}) => {
                                 />
                                 <Card.Content>
                                     <Title>{item.name}</Title>
-                                    <Subheading>{item.coords.latitude}, {item.coords.longitude}</Subheading>
+                                    <Subheading>{item.address}</Subheading>
                                 </Card.Content>
                             </Card>
                         )}
