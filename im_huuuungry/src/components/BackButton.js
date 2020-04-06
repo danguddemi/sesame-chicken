@@ -1,11 +1,10 @@
 import React, { memo } from "react";
-import { TouchableOpacity, Image, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
+import { IconButton } from "react-native-paper";
 
 const BackButton = ({ goBack }) => (
-  <TouchableOpacity onPress={goBack} style={styles.container}>
-    <Image style={styles.image} source={require("../assets/arrow_back.png")} />
-  </TouchableOpacity>
+  <IconButton onPress={goBack} style={styles.container} icon={require("../assets/arrow_back.png")}/>
 );
 
 const styles = StyleSheet.create({
@@ -13,10 +12,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10 + getStatusBarHeight(),
     left: 10
-  },
-  image: {
-    width: 24,
-    height: 24
   }
 });
 

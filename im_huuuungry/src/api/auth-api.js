@@ -1,19 +1,20 @@
-import firebase from "firebase/app";
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
+import firebase from 'firebase/app';
+import '@firebase/auth';
+import '@firebase/firestore';
+
 
 export const logoutUser = () => {
-  auth().signOut();
+  firebase.auth().signOut();
 };
 
 export const signInUser = async ({ name, email, password }) => {
   try {
-    await auth().createUserWithEmailAndPassword(email, password);
-    await auth().currentUser.updateProfile({
+    await firebase.auth().createUserWithEmailAndPassword(email, password);
+    await firebase.auth().currentUser.updateProfile({
       displayName: name
     });
 
-    firestore().collection('users').doc(auth().currentUser.uid).update({'displayName': name});
+    await firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({'displayName': name});
 
     return {};
   } catch (error) {
@@ -44,9 +45,10 @@ export const signInUser = async ({ name, email, password }) => {
 
 export const loginUser = async ({ email, password }) => {
   try {
-    await auth().signInWithEmailAndPassword(email, password);
+    await firebase.auth().signInWithEmailAndPassword(email, password);
     return {};
   } catch (error) {
+    console.log(error);
     switch (error.code) {
       case "auth/invalid-email":
         return {
@@ -71,7 +73,7 @@ export const loginUser = async ({ email, password }) => {
 
 export const sendEmailWithPassword = async email => {
   try {
-    await auth().sendPasswordResetEmail(email);
+    await firebase.auth().sendPasswordResetEmail(email);
     return {};
   } catch (error) {
     switch (error.code) {
