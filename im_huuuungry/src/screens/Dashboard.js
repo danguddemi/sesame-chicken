@@ -92,7 +92,11 @@ const Dashboard = ({navigation}) => {
             />
             <Portal>
                 <Dialog visible={visible} onDismiss={() => setVisible(false)}>
-                    <SelectionDialog categories={categories} addCallback={(value) => addRow(value)}/>
+                    <SelectionDialog
+                        categories={categories}
+                        addCallback={(value) => addRow(value)}
+                        cancel={() => setVisible(false)}
+                    />
                 </Dialog>
             </Portal>
         </Background>);
